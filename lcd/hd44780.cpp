@@ -69,11 +69,11 @@ void HD44780::returnHome()
 uint8_t HD44780::checkBF() // sprawdzić odbieranie na I2C
 {
 	uint8_t checkFlag =0b10000000; // 1 on MSB is needed to set expander P7 in read mode
+	
 	checkFlag |= RW;
-
 	i2c->sendByte(&checkFlag, address);
-	checkFlag |= EN ;
 
+	checkFlag |= EN ;
 	i2c->sendByte(&checkFlag, address);
 	
 	
