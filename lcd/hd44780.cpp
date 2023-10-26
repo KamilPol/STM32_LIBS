@@ -66,10 +66,10 @@ void HD44780::returnHome()
 	sendByte(0x2, modes::command);
 	//delay(5);
 }
-uint8_t HD44780::checkBF() // sprawdzić odbieranie na I2C
+bool HD44780::busy() 
 {
-	uint8_t checkFlag =0b10000000; // 1 on MSB is needed to set expander P7 in read mode
-	
+	uint8_t checkFlag =0b10001000; // 1 on MSB is needed to set expander P7 in read mode, 1 on 4th bit for BL enable
+
 	checkFlag |= RW;
 	i2c->sendByte(&checkFlag, address);
 
@@ -80,6 +80,13 @@ uint8_t HD44780::checkBF() // sprawdzić odbieranie na I2C
 	uint8_t tmpRcvByte = i2c->recieveByte(address);
 	checkFlag &= ~EN;
 	i2c->sendByte(&checkFlag, address);
-	return tmpRcvByte;
-}
 
+	if ((tmpRcvByte & 0b10000000))
+		return true;
+	return false;
+}
+void HD44780::executeIfNotBusy(void (*_LCDfunction)())
+{
+	if (!(busy()))
+		_LCDfunction();
+}
