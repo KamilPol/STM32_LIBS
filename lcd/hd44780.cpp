@@ -1,6 +1,6 @@
 #include "hd44780.h"
 
-HD44780::HD44780(I2C* _i2c, uint8_t _address) : address (_address), i2c( _i2c)
+HD44780::HD44780(I2C* _i2c, uint8_t _address, uint8_t _characters, uint8_t _lines) : address (_address), i2c( _i2c), characters(_characters), lines(_lines)
 {
 	LCDdata = 0x0;
 }
@@ -89,4 +89,11 @@ void HD44780::executeIfNotBusy(void (*_LCDfunction)())
 {
 	if (!(busy()))
 		_LCDfunction();
+}
+
+void HD44780::setPosition (uint8_t _character, uint8_t _line)
+{
+	uint8_t setPositionCommand = 0x80 + _character;
+	if (_line > 0) setPositionCommand += 64;
+	lcd.sendByte(setPositionCommand,modes::command);
 }

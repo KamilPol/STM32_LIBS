@@ -24,25 +24,21 @@ enum class modes
 	command,
 	data
 };
-struct Queqe
-{
-	int commandType;
-	char stringToPrint [256];
-};
 
 class HD44780 
 {
 private:
-uint8_t LCDdata;
-void sendHalfByte(uint8_t _byte, modes _mode);
-void sendByte(uint8_t _byte, modes _mode);
-Queqe QueqeElements[256];
-int QueueHead=0;
+	uint8_t LCDdata;
+	void sendHalfByte(uint8_t _byte, modes _mode);
+	void sendByte(uint8_t _byte, modes _mode);	
+	uint8_t address;
+	uint8_t characters;
+	uint8_t lines;
+	I2C* i2c;
 
-uint8_t address;
-I2C* i2c;
+
 public:
-	HD44780(I2C* _i2c, uint8_t _address);
+	HD44780(I2C* _i2c, uint8_t _address, uint8_t _characters, uint8_t _lines);
 	void Init();
 	void backLight(bool _state);
 	void print(const char* _string);
@@ -51,6 +47,8 @@ public:
 	void returnHome();
 	bool busy(); 
 	void executeIfNotBusy(void (*_LCDfunction)());
+	void setPosition (uint8_t _character, uint8_t line);
+
 	
 };
 
