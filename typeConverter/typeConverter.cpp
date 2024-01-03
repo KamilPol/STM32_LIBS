@@ -22,12 +22,12 @@ int absNumber = _number<0? -_number : _number;
 	_string[i]='\0';
 }
 
-void typeConverter::fractionalToString (double _number, char * _string, uint8_t _precision)
+void typeConverter::fractionalToString (float _number, char * _string, uint8_t _precision)
 {
 	int i=0;
 	bool negative = _number<0? true : false;
 	int64_t integerPart = static_cast<int64_t>(_number);
-	double fractionalPart;
+	float fractionalPart;
 	fractionalPart =  _number - integerPart;
 	fractionalPart <0 ? fractionalPart = -fractionalPart : fractionalPart = fractionalPart;
 	int absNumber = integerPart < 0 ? -integerPart : integerPart;

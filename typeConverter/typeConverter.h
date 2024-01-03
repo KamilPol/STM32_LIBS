@@ -8,7 +8,7 @@ class typeConverter
 
 public:
     static void IntToString (int _number, char * _string);
-    static void fractionalToString (double _number, char * _string, uint8_t _precision=3);
+    static void fractionalToString (float _number, char * _string, uint8_t _precision=3);
     static float stringToFloat(const char* _string);
     static int stringToInt(const char* _string);
     static void reverseArray(char* _charTab, int _lenght);
