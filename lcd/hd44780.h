@@ -30,11 +30,12 @@ class HD44780
 private:
 	uint8_t LCDdata;
 	void sendHalfByte(uint8_t _byte, modes _mode);
-	void sendByte(uint8_t _byte, modes _mode);	
+	void sendByte(uint8_t _byte, modes _mode);
 	uint8_t address;
+	I2C* i2c;	
 	uint8_t characters;
 	uint8_t lines;
-	I2C* i2c;
+
 
 
 public:

@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 
+template < int bSize >
 
 class Buffer
 {
@@ -16,7 +17,7 @@ public:
 	};
 
 private:
-	static const int bSize=256;
+	//static const int bSize=256;
 	volatile uint8_t  head=0;
 	volatile uint8_t tail=0;
 
@@ -25,8 +26,33 @@ public:
 	char buffer [bSize];
 	bool empty();
 	void flush();
-	status write(char _data);
-	status read(char* _data);
+	status write(char _data)
+	{
+	if ((head+1)==tail)
+		return Buffer::status::bufferFull;
+	
+	buffer[head] = _data;
+	head++;
+	
+	if ( head == (bSize-1) )
+		head = 0;
+
+	return Buffer::status::ok;
+	
+}
+	status read(char* _data)
+	{
+	if (tail==head) 
+		return Buffer::status::bufferEmpty;
+		
+	*_data=buffer[tail];
+	tail++;
+
+	if ( tail == (bSize-1) )
+		tail = 0;
+
+	return Buffer::status::ok;
+}
 };
 
 
