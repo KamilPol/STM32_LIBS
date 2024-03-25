@@ -26,14 +26,14 @@ public:
 	char buffer [bSize];
 	bool empty()
 	{
-	if (tail==head) 
-		return 1;
-	return 0;		
+		if (tail==head) 
+			return 1;
+		return 0;		
 	}
 	void flush()
 	{
-	head=0;
-	tail=0;
+		head=0;
+		tail=0;
 	}
 	status write(char _data)
 	{
