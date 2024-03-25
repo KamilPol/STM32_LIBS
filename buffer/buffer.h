@@ -24,8 +24,17 @@ private:
 
 public:
 	char buffer [bSize];
-	bool empty();
-	void flush();
+	bool empty()
+	{
+	if (tail==head) 
+		return 1;
+	return 0;		
+	}
+	void flush()
+	{
+	head=0;
+	tail=0;
+	}
 	status write(char _data)
 	{
 	if ((head+1)==tail)
