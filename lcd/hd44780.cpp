@@ -7,22 +7,22 @@ HD44780::HD44780(I2C* _i2c, uint8_t _address, uint8_t _characters, uint8_t _line
 void HD44780::Init()
 {	
 	LCDdata = 0x0; 
-	lcd.backLight(true);
-	lcd.sendHalfByte(0x03, modes::command);
+	backLight(true);
+	sendHalfByte(0x03, modes::command);
 	delay(5);
-	lcd.sendHalfByte(0x03, modes::command);
+	sendHalfByte(0x03, modes::command);
 	delay(5);
-	lcd.sendHalfByte(0x03, modes::command);
+	sendHalfByte(0x03, modes::command);
 	delay(5);
-	lcd.sendHalfByte(0x02, modes::command);
+	sendHalfByte(0x02, modes::command);
 	delay(5);
-	lcd.sendByte(0x28, modes::command); // 4 bit, 2 lines, 5x8
+	sendByte(0x28, modes::command); // 4 bit, 2 lines, 5x8
 	delay(5);
-	lcd.sendByte(0xC, modes::command); // display on, cursor off, blinking cursor off
+	sendByte(0xC, modes::command); // display on, cursor off, blinking cursor off
 	delay(5);
-	lcd.sendByte(0x01, modes::command); // clear display
+	sendByte(0x01, modes::command); // clear display
 	delay(5);
-	lcd.sendByte(0x06, modes::command); // entry mode, set increment
+	sendByte(0x06, modes::command); // entry mode, set increment
 }
 void HD44780::sendHalfByte(uint8_t _data, modes _mode) 
 {   
@@ -95,5 +95,5 @@ void HD44780::setPosition (uint8_t _character, uint8_t _line)
 {
 	uint8_t setPositionCommand = 0x80 + _character;
 	if (_line > 0) setPositionCommand += 64;
-	lcd.sendByte(setPositionCommand,modes::command);
+	sendByte(setPositionCommand,modes::command);
 }
