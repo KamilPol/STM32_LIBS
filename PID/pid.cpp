@@ -24,7 +24,7 @@
 /* ~~~~~~~~~~~~~~~~ Constructor ~~~~~~~~~~~~~~~~ */
 PID::PID() { }
 
-PID::PID(double *Input, double *Output, double *Setpoint, double Kp, double Ki, double Kd, PIDPON_TypeDef POn, PIDCD_TypeDef ControllerDirection)
+PID::PID(float *Input, float *Output, float *Setpoint, float Kp, float Ki, float Kd, PIDPON_TypeDef POn, PIDCD_TypeDef ControllerDirection)
 {
 	/* ~~~~~~~~~~ Set parameter ~~~~~~~~~~ */
 	_myOutput   = Output;
@@ -34,7 +34,7 @@ PID::PID(double *Input, double *Output, double *Setpoint, double Kp, double Ki, 
 	
 	PID::SetOutputLimits(0, _PID_8BIT_PWM_MAX);
 	
-	_sampleTime = _PID_SAMPLE_TIME_MS_DEF; /* default Controller Sample Time is 0.1 seconds */
+	_sampleTime = _PID_SAMPLE_TIME_US_DEF; /* default Controller Sample Time is 0.1 seconds */
 	
 	PID::SetControllerDirection(ControllerDirection);
 	PID::SetTunings(Kp, Ki, Kd, POn);
@@ -43,7 +43,7 @@ PID::PID(double *Input, double *Output, double *Setpoint, double Kp, double Ki, 
 	
 }
 
-PID::PID(double *Input, double *Output, double *Setpoint, double Kp, double Ki, double Kd, PIDCD_TypeDef ControllerDirection) : PID::PID(Input, Output, Setpoint, Kp, Ki, Kd, _PID_P_ON_E, ControllerDirection){ }
+PID::PID(float *Input, float *Output, float *Setpoint, float Kp, float Ki, float Kd, PIDCD_TypeDef ControllerDirection) : PID::PID(Input, Output, Setpoint, Kp, Ki, Kd, _PID_P_ON_E, ControllerDirection){ }
 
 /* ~~~~~~~~~~~~~~~~~ Initialize ~~~~~~~~~~~~~~~~ */
 void PID::Init(void)
@@ -64,7 +64,7 @@ void PID::Init(void)
 	
 }
 
-void PID::Init(double *Input, double *Output, double *Setpoint, double Kp, double Ki, double Kd, PIDPON_TypeDef POn, PIDCD_TypeDef ControllerDirection)
+void PID::Init(float *Input, float *Output, float *Setpoint, float Kp, float Ki, float Kd, PIDPON_TypeDef POn, PIDCD_TypeDef ControllerDirection)
 {
 	/* ~~~~~~~~~~ Set parameter ~~~~~~~~~~ */
 	_myOutput   = Output;
@@ -74,7 +74,7 @@ void PID::Init(double *Input, double *Output, double *Setpoint, double Kp, doubl
 	
 	PID::SetOutputLimits(0, _PID_8BIT_PWM_MAX);
 	
-	_sampleTime = _PID_SAMPLE_TIME_MS_DEF; /* default Controller Sample Time is 0.1 seconds */
+	_sampleTime = _PID_SAMPLE_TIME_US_DEF; /* default Controller Sample Time is 0.1 seconds */
 	
 	PID::SetControllerDirection(ControllerDirection);
 	PID::SetTunings(Kp, Ki, Kd, POn);
@@ -83,7 +83,7 @@ void PID::Init(double *Input, double *Output, double *Setpoint, double Kp, doubl
 	
 }
 
-void PID::Init(double *Input, double *Output, double *Setpoint, double Kp, double Ki, double Kd, PIDCD_TypeDef ControllerDirection)
+void PID::Init(float *Input, float *Output, float *Setpoint, float Kp, float Ki, float Kd, PIDCD_TypeDef ControllerDirection)
 {
 	PID::Init(Input, Output, Setpoint, Kp, Ki, Kd, _PID_P_ON_E, ControllerDirection);
 }
@@ -95,10 +95,10 @@ uint8_t PID::Compute(void)
 	uint32_t now;
 	uint32_t timeChange;
 	
-	double input;
-	double error;
-	double dInput;
-	double output;
+	float input;
+	float error;
+	float dInput;
+	float output;
 	
 	/* ~~~~~~~~~~ Check PID mode ~~~~~~~~~~ */
 	if (!_inAuto)
@@ -110,7 +110,7 @@ uint8_t PID::Compute(void)
 	now        = GetTime();
 	timeChange = (now - _lastTime);
 	
-	if (timeChange >= _sampleTime)
+	if (timeChange >= 0)
 	{
 		/* ..... Compute all the working error variables ..... */
 		input   = *_myInput;
@@ -195,7 +195,7 @@ PIDMode_TypeDef PID::GetMode(void)
 }
 
 /* ~~~~~~~~~~~~~~~~ PID Limits ~~~~~~~~~~~~~~~~~ */
-void PID::SetOutputLimits(double Min, double Max)
+void PID::SetOutputLimits(float Min, float Max)
 {
 	/* ~~~~~~~~~~ Check value ~~~~~~~~~~ */
 	if (Min >= Max)
@@ -237,14 +237,14 @@ void PID::SetOutputLimits(double Min, double Max)
 }
 
 /* ~~~~~~~~~~~~~~~~ PID Tunings ~~~~~~~~~~~~~~~~ */
-void PID::SetTunings(double Kp, double Ki, double Kd)
+void PID::SetTunings(float Kp, float Ki, float Kd)
 {
 	PID::SetTunings(Kp, Ki, Kd, _pOn);
 }
-void PID::SetTunings(double Kp, double Ki, double Kd, PIDPON_TypeDef POn)
+void PID::SetTunings(float Kp, float Ki, float Kd, PIDPON_TypeDef POn)
 {
 	
-	double SampleTimeInSec;
+	float SampleTimeInSec;
 	
 	/* ~~~~~~~~~~ Check value ~~~~~~~~~~ */
 	if (Kp < 0 || Ki < 0 || Kd < 0)
@@ -261,7 +261,7 @@ void PID::SetTunings(double Kp, double Ki, double Kd, PIDPON_TypeDef POn)
 	_dispKd = Kd;
 	
 	/* ~~~~~~~~~ Calculate time ~~~~~~~~ */
-	SampleTimeInSec = ((double)_sampleTime) / 1000;
+	SampleTimeInSec = ((float)_sampleTime) / 1000000;
 	
 	_kp = Kp;
 	_ki = Ki * SampleTimeInSec;
@@ -304,13 +304,13 @@ PIDCD_TypeDef PID::GetDirection(void)
 void PID::SetSampleTime(int32_t NewSampleTime)
 {
 	
-	double ratio;
+	float ratio;
 	
 	/* ~~~~~~~~~~ Check value ~~~~~~~~~~ */
 	if (NewSampleTime > 0)
 	{
 		
-		ratio = (double)NewSampleTime / (double)_sampleTime;
+		ratio = (float)NewSampleTime / (float)_sampleTime;
 		
 		_ki *= ratio;
 		_kd /= ratio;
@@ -321,15 +321,15 @@ void PID::SetSampleTime(int32_t NewSampleTime)
 }
 
 /* ~~~~~~~~~~~~~ Get Tunings Param ~~~~~~~~~~~~~ */
-double PID::GetKp(void)
+float PID::GetKp(void)
 {
 	return _dispKp;
 }
-double PID::GetKi(void)
+float PID::GetKi(void)
 {
 	return _dispKi;
 }
-double PID::GetKd(void)
+float PID::GetKd(void)
 {
 	return _dispKd;
 }

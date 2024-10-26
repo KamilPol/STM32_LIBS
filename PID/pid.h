@@ -24,7 +24,6 @@
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Include ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 #include <stdint.h>
 #include <string.h>
-
 /* ------------------------------------------------------------------ */
 
 #ifdef __CODEVISIONAVR__  /* Check compiler */
@@ -110,7 +109,7 @@
 
 /* ------------------------ Public ------------------------- */
 #define _PID_8BIT_PWM_MAX       UINT8_MAX
-#define _PID_SAMPLE_TIME_MS_DEF 100
+#define _PID_SAMPLE_TIME_US_DEF 25
 
 #ifndef _FALSE
 
@@ -201,35 +200,35 @@ class PID
 	uint32_t        _lastTime;
 	uint32_t        _sampleTime;
 
-	double          _dispKp;
-	double          _dispKi;
-	double          _dispKd;
+	float          _dispKp;
+	float          _dispKi;
+	float          _dispKd;
 
-	double          _kp;
-	double          _ki;
-	double          _kd;
+	float          _kp;
+	float          _ki;
+	float          _kd;
 
-	double          *_myInput;
-	double          *_myOutput;
-	double          *_mySetpoint;
+	float          *_myInput;
+	float          *_myOutput;
+	float          *_mySetpoint;
 
-	double          _outputSum;
-	double          _lastInput;
+	float          _outputSum;
+	float          _lastInput;
 
-	double          _outMin;
-	double          _outMax;
+	float          _outMin;
+	float          _outMax;
 	
 	public:
 	
 	/* :::::::::: Constructor :::::::::: */
 	PID();
-	PID(double *Input, double *Output, double *Setpoint, double Kp, double Ki, double Kd, PIDPON_TypeDef POn, PIDCD_TypeDef ControllerDirection);
-	PID(double *Input, double *Output, double *Setpoint, double Kp, double Ki, double Kd, PIDCD_TypeDef ControllerDirection);
+	PID(float *Input, float *Output, float *Setpoint, float Kp, float Ki, float Kd, PIDPON_TypeDef POn, PIDCD_TypeDef ControllerDirection);
+	PID(float *Input, float *Output, float *Setpoint, float Kp, float Ki, float Kd, PIDCD_TypeDef ControllerDirection);
 
 	/* :::::::::::::: Init ::::::::::::: */
 	void Init(void);
-	void Init(double *Input, double *Output, double *Setpoint, double Kp, double Ki, double Kd, PIDPON_TypeDef POn, PIDCD_TypeDef ControllerDirection);
-	void Init(double *Input, double *Output, double *Setpoint, double Kp, double Ki, double Kd, PIDCD_TypeDef ControllerDirection);
+	void Init(float *Input, float *Output, float *Setpoint, float Kp, float Ki, float Kd, PIDPON_TypeDef POn, PIDCD_TypeDef ControllerDirection);
+	void Init(float *Input, float *Output, float *Setpoint, float Kp, float Ki, float Kd, PIDCD_TypeDef ControllerDirection);
 
 	/* ::::::::::: Computing ::::::::::: */
 	uint8_t Compute(void);
@@ -239,11 +238,11 @@ class PID
 	PIDMode_TypeDef GetMode(void);
 
 	/* :::::::::: PID Limits ::::::::::: */
-	void SetOutputLimits(double Min, double Max);
+	void SetOutputLimits(float Min, float Max);
 
 	/* :::::::::: PID Tunings :::::::::: */
-	void SetTunings(double Kp, double Ki, double Kd);
-	void SetTunings(double Kp, double Ki, double Kd, PIDPON_TypeDef POn);
+	void SetTunings(float Kp, float Ki, float Kd);
+	void SetTunings(float Kp, float Ki, float Kd, PIDPON_TypeDef POn);
 
 	/* ::::::::: PID Direction ::::::::: */
 	void          SetControllerDirection(PIDCD_TypeDef Direction);
@@ -253,9 +252,9 @@ class PID
 	void SetSampleTime(int32_t NewSampleTime);
 
 	/* ::::::: Get Tunings Param ::::::: */
-	double GetKp(void);
-	double GetKi(void);
-	double GetKd(void);
+	float GetKp(void);
+	float GetKi(void);
+	float GetKd(void);
 	
 };
 
