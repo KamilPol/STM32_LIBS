@@ -1,9 +1,9 @@
 #ifndef MOTOR_H 
 #define MOTOR_H 
 
+
 #include "stm32g4xx.h"
 #include "motor_math.h"
-
 
 
 // typedef enum
@@ -22,22 +22,20 @@ typedef struct
 	float UalphaBeta_pu[2];
 	float Udq_pu[2];
 
-
 	float Iabc_A[3];
 	float IalphaBeta_A[2];
 	float Idq_A[2];
+	float FilteredIdqA[2];
 
 	float theta_Rad;
+	uint16_t theta_RawFB;
 	float theta_RadPerLoop;
 
-	struct{
-		float setSpeed_RPM;
-		float setIdq_A[2];
+	// struct{   // to w motor_process // ten driver dostaje tylko kąt i prąd (prąd liczony z regulatora prądu i kąt na podstawie zadanej prędkosci lub z regulatora predkosci - wszystko liczone w pętli w motor process)
+	// 	float setSpeed_RPM;
+	// 	float setIdq_A[2];
 
-	}set;
-
-
-
+	// }set;
 }motor_t ;
 
 static inline void motor_setABCcurrentsFB (motor_t* motor, float iA, float iB, float iC)
@@ -48,10 +46,13 @@ static inline void motor_setABCcurrentsFB (motor_t* motor, float iA, float iB, f
 }
 static inline void motor_clark (motor_t* motor)
 {
-	motor->IalphaBeta_A[0] = motor->Iabc_A[0];
-	motor->IalphaBeta_A[1] = (M_1_SQRT3 * motor->IalphaBeta_A[0]) + (M_2_SQRT3 * motor->Iabc_A[1]);
+	// motor->IalphaBeta_A[0] = motor->Iabc_A[0];
+	// motor->IalphaBeta_A[1] = (M_1_SQRT3 * motor->IalphaBeta_A[0]) + (M_2_SQRT3 * motor->Iabc_A[1]);
+
+	motor->IalphaBeta_A[0] = 0.33333333333f * 2.0f * motor->Iabc_A[0] - (motor->Iabc_A[1] + motor->Iabc_A[2]);
+	motor->IalphaBeta_A[1] = M_1_SQRT3 * (motor->Iabc_A[1] - motor->Iabc_A[2]);
 }
-static inline void motor_ParkTransform (motor_t* motor)
+static inline void motor_parkTransform (motor_t* motor)
 {
 	motor->Idq_A[0] = motor->IalphaBeta_A[0] * cos(motor->theta_Rad) + motor->IalphaBeta_A[1] * sin(motor->theta_Rad);
 	motor->Idq_A[1] = -motor->IalphaBeta_A[0] * sin(motor->theta_Rad) + motor->IalphaBeta_A[1] * cos(motor->theta_Rad);
@@ -64,6 +65,7 @@ static inline void motor_invParkTransform (motor_t* motor)
 	motor->UalphaBeta_pu[0] = cos(motor->theta_Rad) * motor->Udq_pu[0] - sin(motor->theta_Rad) * motor->Udq_pu[1];  // -sin(angle) * Uq;
 	motor->UalphaBeta_pu[1] = sin(motor->theta_Rad) * motor->Udq_pu[0] + cos(motor->theta_Rad) * motor->Udq_pu[1];    //  cos(angle) * Uq;
 
+	
 	// Ualpha = cos(angle_el) * Ud -sin(angle_el) * Uq;  // -sin(angle) * Uq;
 	// Ubeta = sin(angle_el) * Ud + cos(angle_el) * Uq;    //  cos(angle) * Uq;
 }
@@ -76,11 +78,20 @@ static inline void motor_invClarkTransform (motor_t* motor)
 	// uint32_t Ub = -0.5f * Ualpha  + M_SQRT3_2 * Ubeta + 500;
 	// uint32_t Uc = -0.5f * Ualpha - M_SQRT3_2 * Ubeta + 500;
 }
+static inline void motor_setThetaRef (motor_t *motor, float	thetaSet)
+{
+	motor->theta_Rad = thetaSet;
+}
 static inline float* motor_getUabc_pu(motor_t* motor)
 {
 	return motor->Uabc_pu;
 }
-void motor_dutyProc(motor_t* motor);
+
+static inline void motor_setThetaFB (motor_t* motor, uint16_t theta)
+{
+	motor->theta_RawFB = theta;
+}
+void motor_procesIRQ(motor_t* motor);
 
 
 

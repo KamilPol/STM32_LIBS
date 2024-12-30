@@ -1,6 +1,7 @@
 #ifndef MOTOR_MATH_H
 #define MOTOR_MATH_H
 
+#include <math.h>
 #define M_PI 3.14159265358979323846f
 #define M_2PI 6.28318530717958647692f
 #define M_SQRT3_2 0.86602540378f
